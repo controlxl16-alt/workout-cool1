@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Product — Ensemble</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,400;1,9..144,300&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/main.css" />
+  <style>
+    .pdp-wrap {
+      max-width: var(--max); margin: 0 auto;
+      padding: 2rem var(--side) 5rem;
+    }
+
+    /* ── Layout ── */
+    .pdp-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(2rem,5vw,5rem);
+      align-items: start;
+    }
+
+    /* ── Gallery ── */
+    .gallery { position: sticky; top: calc(var(--hdr-h) + 1.5rem); }
+    .gallery-main {
+      aspect-ratio: 3/4;
+      overflow: hidden;
+      background: var(--g100);
+      margin-bottom: .8rem;
+    }
+    .gallery-main img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: opacity .35s ease;
+    }
+    .gallery-thumbs { display: flex; gap: .6rem; flex-wrap: wrap; }
+    .thumb {
+      width: 72px; height: 86px;
+      object-fit: cover;
+      background: var(--g100);
+      cursor: pointer;
+      opacity: .55;
+      transition: opacity .2s;
+      border: 1.5px solid transparent;
+    }
+    .thumb.active, .thumb:hover { opacity: 1; border-color: var(--black); }
+
+    /* ── Info Panel ── */
+    .pdp-info { padding-top: .4rem; }
+
+    .pdp-badge {
+      display: inline-block;
+      background: var(--black); color: #fff;
+      font-size: 9px; letter-spacing: .2em;
+      text-transform: uppercase; padding: .25rem .7rem;
+      margin-bottom: 1rem;
+    }
+    .pdp-badge.new { background: var(--g600); }
+
+    .pdp-name {
+      font-family: var(--serif); font-weight: 300;
+      font-size: clamp(28px, 3.5vw, 48px);
+      letter-spacing: -.02em; line-height: 1.1;
+      margin-bottom: .4rem;
+    }
+    .pdp-sub { font-size: 14px; color: var(--g400); margin-bottom: 1.2rem; }
+
+    .pdp-price {
+      font-size: clamp(20px, 2vw, 26px);
+      font-weight: 500; margin-bottom: .4rem;
+    }
+    .pdp-tax { font-size: 12px; color: var(--g400); margin-bottom: 1.6rem; }
+
+    /* Rating */
+    .pdp-rating { display: flex; align-items: center; gap: .6rem; margin-bottom: 1.8rem; }
+
+    /* Color swatches */
+    .pdp-section-label {
+      font-size: 10px; letter-spacing: .28em;
+      text-transform: uppercase; color: var(--g600);
+      margin-bottom: .75rem;
+    }
+    .color-options { display: flex; gap: .75rem; margin-bottom: 2rem; }
+    .color-opt {
+      display: flex; flex-direction: column;
+      align-items: center; gap: .35rem;
+      cursor: pointer;
+      text-decoration: none; color: var(--black);
+    }
+    .color-circle {
+      width: 32px; height: 32px; border-radius: 50%;
+      border: 1.5px solid transparent;
+      transition: border-color .2s;
+      box-shadow: 0 0 0 1px rgba(0,0,0,.1);
+    }
+    .color-opt.active .color-circle,
+    .color-opt:hover .color-circle { border-color: var(--black); }
+    .color-opt span { font-size: 10px; letter-spacing: .05em; color: var(--g400); }
+
+    /* Size */
+    .size-row {
+      display: flex; align-items: center;
+      justify-content: space-between;
+      margin-bottom: .75rem;
+    }
+    .size-guide-link {
+      font-size: 11px; letter-spacing: .05em;
+      text-decoration: underline; text-underline-offset: 2px;
+      color: var(--g400); cursor: pointer;
+    }
+    .size-guide-link:hover { color: var(--black); }
+    .size-grid { margin-bottom: 1.8rem; }
+    .size-error { font-size: 12px; color: var(--red); margin-top: .4rem; display: none; }
+
+    /* Qty + CTA */
+    .atc-row { display: flex; gap: .6rem; margin-bottom: 1rem; }
+    .qty-box {
+      display: flex; align-items: center;
+      border: 1.5px solid var(--g200); min-width: 96px;
+    }
+    .qty-box button {
+      width: 32px; height: 48px;
+      font-size: 18px; color: var(--g600);
+      transition: color .2s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .qty-box button:hover { color: var(--black); }
+    .qty-box span {
+      flex: 1; text-align: center;
+      font-size: 14px;
+    }
+    .atc-btn {
+      flex: 1; height: 48px;
+      font-size: 11px; letter-spacing: .2em;
+      text-transform: uppercase;
+    }
+    .buynow-btn {
+      width: 100%; height: 48px;
+      background: transparent;
+      border: 1.5px solid var(--black);
+      font-size: 11px; letter-spacing: .2em;
+      text-transform: uppercase; cursor: pointer;
+      transition: background .25s, color .25s;
+      margin-bottom: 1.4rem;
+    }
+    .buynow-btn:hover { background: var(--black); color: #fff; }
+
+    /* Trust badges */
+    .trust-row {
+      display: flex; flex-direction: column; gap: .5rem;
+      padding: 1.2rem 0; border-top: 1px solid var(--g100);
+      margin-bottom: 1.8rem;
+    }
+    .trust-item { display: flex; align-items: center; gap: .7rem; font-size: 13px; color: var(--g600); }
+    .trust-item svg { flex-shrink: 0; color: var(--g400); }
+
+    /* Related */
+    .related-section {
+      padding: clamp(3rem,6vw,5rem) var(--side);
+      border-top: 1px solid var(--g100);
+      background: var(--off);
+    }
+    .related-grid {
+      max-width: var(--max); margin: 1.5rem auto 0;
+      display: grid;
+      grid-template-columns: repeat(2,1fr);
+      gap: var(--gap);
+    }
+
+    /* Mobile */
+    @media (max-width: 900px) {
+      .pdp-grid { grid-template-columns: 1fr; }
+      .gallery { position: static; }
+    }
+    @media (max-width: 480px) {
+      .related-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="site-header" data-root=""></div>
+
+<div class="pdp-wrap">
+
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb">
+    <a href="index.html">Home</a>
+    <span>/</span>
+    <a href="shop.html">Shop</a>
+    <span>/</span>
+    <span id="bc-name">Product</span>
+  </nav>
+
+  <div class="pdp-grid">
+
+    <!-- Gallery -->
+    <div class="gallery">
+      <div class="gallery-main">
+        <img id="main-img" src="" alt="" />
+      </div>
+      <div class="gallery-thumbs" id="thumbs"></div>
+    </div>
+
+    <!-- Info -->
+    <div class="pdp-info">
+      <div id="pdp-badge-wrap"></div>
+      <h1 class="pdp-name" id="pdp-name"></h1>
+      <p class="pdp-sub" id="pdp-sub"></p>
+      <p class="pdp-price" id="pdp-price"></p>
+      <p class="pdp-tax">Tax included. Free shipping worldwide.</p>
+
+      <div class="pdp-rating">
+        <span class="stars">★★★★★</span>
+        <span class="rating-meta">4.9 · 124 reviews</span>
+      </div>
+
+      <!-- Color options -->
+      <p class="pdp-section-label">Colorway</p>
+      <div class="color-options" id="color-opts"></div>
+
+      <!-- Size -->
+      <div class="size-row">
+        <p class="pdp-section-label" style="margin:0">Size <span id="selected-size-label"></span></p>
+        <span class="size-guide-link" onclick="openSizeGuide()">Size Guide</span>
+      </div>
+      <div class="size-grid" id="size-grid"></div>
+      <p class="size-error" id="size-error">Please select a size before adding to cart.</p>
+
+      <!-- Qty + ATC -->
+      <div class="atc-row">
+        <div class="qty-box">
+          <button onclick="changeQty(-1)">−</button>
+          <span id="qty-val">1</span>
+          <button onclick="changeQty(1)">+</button>
+        </div>
+        <button class="btn-primary atc-btn" onclick="handleATC()">Add to Cart</button>
+      </div>
+      <button class="buynow-btn" onclick="handleBuyNow()">Buy Now</button>
+
+      <!-- Trust -->
+      <div class="trust-row">
+        <div class="trust-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12l5 5L20 7"/></svg>
+          Free worldwide delivery
+        </div>
+        <div class="trust-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h16v12H4z"/><path d="M8 20h8M12 16v4"/></svg>
+          30 day hassle-free returns
+        </div>
+        <div class="trust-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3 6.5L22 9.3l-5 4.9 1.2 6.8L12 17.8l-6.2 3.2 1.2-6.8L2 9.3l7-0.8z"/></svg>
+          Premium Italian fabric
+        </div>
+        <div class="trust-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          Secure checkout
+        </div>
+      </div>
+
+      <!-- Accordion -->
+      <div class="accordion">
+        <div class="accordion-item">
+          <button class="accordion-trigger" onclick="toggleAcc(this)">
+            <span>Product Details</span><span class="acc-icon">+</span>
+          </button>
+          <div class="accordion-body">
+            <div class="accordion-body-inner"><ul id="acc-details"></ul></div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <button class="accordion-trigger" onclick="toggleAcc(this)">
+            <span>Fabric and Care</span><span class="acc-icon">+</span>
+          </button>
+          <div class="accordion-body">
+            <div class="accordion-body-inner"><ul id="acc-care"></ul></div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <button class="accordion-trigger" onclick="toggleAcc(this)">
+            <span>Shipping and Returns</span><span class="acc-icon">+</span>
+          </button>
+          <div class="accordion-body">
+            <div class="accordion-body-inner">
+              <ul>
+                <li>Free worldwide shipping on all orders</li>
+                <li>Orders dispatched within 1 to 2 business days</li>
+                <li>30 day return window, items must be unworn and in original packaging</li>
+                <li>Exchanges processed within 3 to 5 business days</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Related -->
+<section class="related-section">
+  <div style="max-width:var(--max);margin:0 auto;">
+    <div class="section-head" style="text-align:left;margin-bottom:0">
+      <p class="eyebrow">You May Also Like</p>
+    </div>
+    <div class="related-grid" id="related-grid"></div>
+  </div>
+</section>
+
+<!-- Size Guide Modal -->
+<div id="size-modal" style="position:fixed;inset:0;z-index:900;display:none;align-items:center;justify-content:center;">
+  <div style="position:absolute;inset:0;background:rgba(0,0,0,.5)" onclick="closeSizeGuide()"></div>
+  <div style="position:relative;background:#fff;padding:2.5rem;max-width:560px;width:90%;max-height:80vh;overflow-y:auto;">
+    <button onclick="closeSizeGuide()" style="position:absolute;top:1rem;right:1.2rem;font-size:20px;color:var(--g400);">✕</button>
+    <p class="eyebrow" style="margin-bottom:.8rem">Size Guide</p>
+    <h3 style="font-family:var(--serif);font-weight:300;font-size:28px;margin-bottom:1.5rem">Find Your Fit</h3>
+    <table style="width:100%;border-collapse:collapse;font-size:13px;">
+      <thead>
+        <tr style="border-bottom:2px solid var(--black);">
+          <th style="text-align:left;padding:.5rem;font-weight:500">Size</th>
+          <th style="text-align:left;padding:.5rem;font-weight:500">Chest (cm)</th>
+          <th style="text-align:left;padding:.5rem;font-weight:500">Waist (cm)</th>
+          <th style="text-align:left;padding:.5rem;font-weight:500">Hip (cm)</th>
+        </tr>
+      </thead>
+      <tbody id="size-table">
+        <tr><td style="padding:.5rem;border-bottom:1px solid var(--g100)">XS</td><td style="padding:.5rem;border-bottom:1px solid var(--g100)">82 to 86</td><td style="padding:.5rem;border-bottom:1px solid var(--g100)">72 to 76</td><td style="padding:.5rem;border-bottom:1px solid var(--g100)">86 to 90</td></tr>
+        <tr><td style="padding:.5rem;border-bottom:1px solid var(--g100)">S</td><td style="padding:.5rem;border-bottom:1px solid var(--g100)">87 to 92</td><td style="padding:.5rem;border-bottom:1px solid var(--g100)">77 to 82</td><td style="padding:.5rem;border-bottom:1px solid var(--g100)">91 to 96</td></tr>
+        <tr><td style="padding:.5rem;border-bottom:1px solid var(--g100)">M</td><td style="padding:.5rem;border-bottom:1px solid var(--g100)">93 to 98</td><td style="padding:.5rem;border-bottom:1px solid var(--g100)">83 to 88</td><td style="padding:.5rem;border-bottom:1px solid var(--g100)">97 to 102</td></tr>
+        <tr><td style="padding:.5rem;border-bottom:1px solid var(--g100)">L</td><td style="padding:.5rem;border-bottom:1px solid var(--g100)">99 to 104</td><td style="padding:.5rem;border-bottom:1px solid var(--g100)">89 to 94</td><td style="padding:.5rem;border-bottom:1px solid var(--g100)">103 to 108</td></tr>
+        <tr><td style="padding:.5rem;border-bottom:1px solid var(--g100)">XL</td><td style="padding:.5rem;border-bottom:1px solid var(--g100)">105 to 110</td><td style="padding:.5rem;border-bottom:1px solid var(--g100)">95 to 100</td><td style="padding:.5rem;border-bottom:1px solid var(--g100)">109 to 114</td></tr>
+        <tr><td style="padding:.5rem">XXL</td><td style="padding:.5rem">111 to 118</td><td style="padding:.5rem">101 to 108</td><td style="padding:.5rem">115 to 122</td></tr>
+      </tbody>
+    </table>
+    <p style="margin-top:1rem;font-size:12px;color:var(--g400);line-height:1.6">Our sets are cut with a relaxed fit. If you are between sizes, we recommend sizing down for a cleaner silhouette.</p>
+  </div>
+</div>
+
+<div id="site-footer" data-root=""></div>
+
+<script src="js/store.js"></script>
+<script>
+var currentProduct = null;
+var selectedSize   = null;
+var qty            = 1;
+
+function toggleAcc(btn){
+  var item = btn.closest('.accordion-item');
+  item.classList.toggle('open');
+}
+
+function openSizeGuide(){
+  var m = document.getElementById('size-modal');
+  m.style.display = 'flex';
+}
+function closeSizeGuide(){
+  document.getElementById('size-modal').style.display = 'none';
+}
+
+function changeQty(d){
+  qty = Math.max(1, qty + d);
+  document.getElementById('qty-val').textContent = qty;
+}
+
+function selectSize(s, btn){
+  selectedSize = s;
+  document.querySelectorAll('.size-btn').forEach(function(b){ b.classList.remove('selected'); });
+  btn.classList.add('selected');
+  document.getElementById('selected-size-label').textContent = '— ' + s;
+  document.getElementById('size-error').style.display = 'none';
+}
+
+function handleATC(){
+  if(!selectedSize){
+    document.getElementById('size-error').style.display = 'block';
+    document.getElementById('size-grid').scrollIntoView({ behavior:'smooth', block:'center' });
+    return;
+  }
+  addToCart(currentProduct.id, selectedSize, qty);
+}
+
+function handleBuyNow(){
+  if(!selectedSize){
+    document.getElementById('size-error').style.display = 'block';
+    return;
+  }
+  addToCart(currentProduct.id, selectedSize, qty);
+  setTimeout(function(){ _demoCheckout(); }, 400);
+}
+
+document.addEventListener('DOMContentLoaded', function(){
+  renderHeader('shop');
+  renderFooter();
+
+  var params = new URLSearchParams(window.location.search);
+  var id     = params.get('id') || PRODUCTS[0].id;
+  var p      = getProduct(id) || PRODUCTS[0];
+  currentProduct = p;
+
+  // Page title
+  document.title = p.name + ' — Ensemble';
+
+  // Breadcrumb
+  document.getElementById('bc-name').textContent = p.name;
+
+  // Badge
+  if(p.badge){
+    document.getElementById('pdp-badge-wrap').innerHTML =
+      '<div class="pdp-badge'+(p.badge==='New'?' new':'')+'">'+p.badge+'</div>';
+  }
+
+  // Name / sub / price
+  document.getElementById('pdp-name').textContent  = p.name;
+  document.getElementById('pdp-sub').textContent   = p.subtitle;
+  document.getElementById('pdp-price').textContent = p.currency + p.price;
+
+  // Gallery
+  var mainImg = document.getElementById('main-img');
+  mainImg.src = p.images[0];
+  mainImg.alt = p.name;
+
+  var thumbsEl = document.getElementById('thumbs');
+  thumbsEl.innerHTML = p.images.map(function(src, i){
+    return '<img class="thumb'+(i===0?' active':'')+'" src="'+src+'" alt="'+p.name+' view '+(i+1)+'" onclick="switchImg(this,\''+src+'\')" loading="lazy" />';
+  }).join('');
+
+  // Color options
+  document.getElementById('color-opts').innerHTML = PRODUCTS.map(function(x){
+    return '<a href="product.html?id='+x.id+'" class="color-opt'+(x.id===p.id?' active':'')+'"><div class="color-circle" style="background:'+x.colorHex+'"></div><span>'+x.colorway+'</span></a>';
+  }).join('');
+
+  // Sizes
+  document.getElementById('size-grid').innerHTML =
+    '<div class="size-grid">'+
+    p.sizes.map(function(s){
+      return '<button class="size-btn" onclick="selectSize(\''+s+'\',this)">'+s+'</button>';
+    }).join('') +
+    '</div>';
+
+  // Accordion: details
+  document.getElementById('acc-details').innerHTML =
+    p.details.map(function(d){ return '<li>'+d+'</li>'; }).join('');
+
+  // Accordion: care
+  document.getElementById('acc-care').innerHTML =
+    '<li>Material: '+p.fabric+'</li>' +
+    p.care.map(function(c){ return '<li>'+c+'</li>'; }).join('');
+
+  // Related
+  var relIds = p.related || [];
+  var relProds = relIds.map(function(rid){ return getProduct(rid); }).filter(Boolean);
+  document.getElementById('related-grid').innerHTML = relProds.map(function(rp){
+    return '<div class="product-card">' +
+      '<a href="product.html?id='+rp.id+'">' +
+        '<div class="card-img-wrap">' +
+          (rp.badge ? '<span class="card-badge'+(rp.badge==='New'?' new':'')+'">'+rp.badge+'</span>' : '') +
+          '<img class="img-main" src="'+rp.images[0]+'" alt="'+rp.name+'" loading="lazy" />' +
+          (rp.images[1] ? '<img class="img-alt" src="'+rp.images[1]+'" alt="'+rp.name+'" loading="lazy" />' : '') +
+        '</div>' +
+        '<div class="card-info">' +
+          '<p class="card-name">'+rp.name+'</p>' +
+          '<p class="card-sub">'+rp.colorway+'</p>' +
+          '<p class="card-price">'+rp.currency+rp.price+'</p>' +
+        '</div>' +
+      '</a>' +
+    '</div>';
+  }).join('');
+});
+
+function switchImg(thumb, src){
+  document.getElementById('main-img').src = src;
+  document.querySelectorAll('.thumb').forEach(function(t){ t.classList.remove('active'); });
+  thumb.classList.add('active');
+}
+</script>
+</body>
+</html>

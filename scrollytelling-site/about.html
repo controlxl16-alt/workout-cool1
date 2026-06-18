@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About — Ensemble</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,400;1,9..144,300&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/main.css" />
+  <style>
+    /* ── Full-bleed Hero ── */
+    .about-hero {
+      position: relative;
+      height: 85vh; min-height: 500px;
+      overflow: hidden;
+    }
+    .about-hero img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: center top;
+    }
+    .hero-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,.65) 0%, rgba(0,0,0,.1) 60%, transparent 100%);
+    }
+    .hero-text {
+      position: absolute;
+      bottom: clamp(2rem, 6vw, 5rem);
+      left: var(--side);
+      right: var(--side);
+      color: #fff;
+    }
+    .hero-text .ey { color: rgba(255,255,255,.5); margin-bottom: .8rem; }
+    .hero-text h1 {
+      font-family: var(--serif); font-weight: 200;
+      font-size: clamp(42px, 7vw, 96px);
+      letter-spacing: -.025em; line-height: .95;
+      max-width: 12ch;
+    }
+
+    /* ── Story ── */
+    .story-section {
+      max-width: var(--max); margin: 0 auto;
+      padding: clamp(3.5rem, 8vw, 7rem) var(--side);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(2.5rem, 6vw, 6rem);
+      align-items: center;
+    }
+    .story-text .ey { margin-bottom: 1rem; }
+    .story-text h2 {
+      font-family: var(--serif); font-weight: 300;
+      font-size: clamp(30px, 4vw, 54px);
+      letter-spacing: -.02em; line-height: 1.1;
+      margin-bottom: 1.5rem;
+    }
+    .story-text p {
+      font-size: clamp(14px, 1.2vw, 16px);
+      color: var(--g600); line-height: 1.8;
+      margin-bottom: 1rem; max-width: 50ch;
+    }
+    .story-img {
+      aspect-ratio: 3/4; overflow: hidden; background: var(--g100);
+    }
+    .story-img img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* ── Pillars ── */
+    .pillars-section {
+      background: var(--off);
+      padding: clamp(3.5rem, 8vw, 7rem) var(--side);
+    }
+    .pillars-grid {
+      max-width: var(--max); margin: 2.5rem auto 0;
+      display: grid; grid-template-columns: repeat(3,1fr);
+      gap: 2rem;
+    }
+    .pillar {
+      padding: 2rem 1.5rem;
+      background: var(--white);
+      border: 1px solid var(--g100);
+    }
+    .pillar-icon {
+      width: 40px; height: 40px; margin-bottom: 1.2rem;
+      color: var(--g400);
+    }
+    .pillar h3 {
+      font-family: var(--serif); font-weight: 300;
+      font-size: 22px; margin-bottom: .8rem; letter-spacing: -.01em;
+    }
+    .pillar p { font-size: 14px; color: var(--g600); line-height: 1.75; }
+
+    /* ── Reversed story ── */
+    .story-section.flip { direction: rtl; }
+    .story-section.flip > * { direction: ltr; }
+
+    /* ── CTA band ── */
+    .about-cta {
+      background: var(--black); color: #fff;
+      text-align: center;
+      padding: clamp(4rem, 9vw, 8rem) var(--side);
+    }
+    .about-cta .ey { color: rgba(255,255,255,.35); margin-bottom: 1rem; }
+    .about-cta h2 {
+      font-family: var(--serif); font-weight: 200;
+      font-size: clamp(36px, 6vw, 80px);
+      letter-spacing: -.025em; margin-bottom: 1.5rem;
+    }
+    .about-cta a {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 1rem 3rem;
+      background: #fff; color: #000;
+      font-size: 11px; font-weight: 500;
+      letter-spacing: .22em; text-transform: uppercase;
+      transition: background .25s;
+    }
+    .about-cta a:hover { background: rgba(240,240,240,1); }
+
+    /* ── Numbers strip ── */
+    .stats-strip {
+      display: flex; justify-content: center;
+      gap: clamp(2rem, 6vw, 6rem); flex-wrap: wrap;
+      padding: clamp(2.5rem, 5vw, 4rem) var(--side);
+      border-top: 1px solid var(--g100);
+      border-bottom: 1px solid var(--g100);
+    }
+    .stat { text-align: center; }
+    .stat-num {
+      font-family: var(--serif); font-weight: 200;
+      font-size: clamp(36px, 5vw, 64px);
+      letter-spacing: -.03em; display: block;
+      line-height: 1;
+    }
+    .stat-label {
+      font-size: 11px; letter-spacing: .2em;
+      text-transform: uppercase; color: var(--g400);
+      margin-top: .5rem;
+    }
+
+    @media (max-width: 860px) {
+      .story-section { grid-template-columns: 1fr; }
+      .story-section.flip { direction: ltr; }
+      .pillars-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="site-header" data-root=""></div>
+
+<!-- Hero -->
+<section class="about-hero">
+  <img src="frames/img_02.jpg" alt="Ensemble brand" />
+  <div class="hero-overlay"></div>
+  <div class="hero-text">
+    <p class="eyebrow ey">Our Story</p>
+    <h1>Made for<br><em>living in</em></h1>
+  </div>
+</section>
+
+<!-- Stats -->
+<div class="stats-strip">
+  <div class="stat"><span class="stat-num">3</span><p class="stat-label">Colorways</p></div>
+  <div class="stat"><span class="stat-num">100%</span><p class="stat-label">Natural Fibres</p></div>
+  <div class="stat"><span class="stat-num">30</span><p class="stat-label">Day Returns</p></div>
+  <div class="stat"><span class="stat-num">124</span><p class="stat-label">Five Star Reviews</p></div>
+</div>
+
+<!-- Story 1 -->
+<section class="story-section">
+  <div class="story-img">
+    <img src="frames/img_01.jpg" alt="Noir linen set on terrace" loading="lazy" />
+  </div>
+  <div class="story-text">
+    <p class="eyebrow">The Beginning</p>
+    <h2>Born from<br>a single idea</h2>
+    <p>Ensemble was founded on a simple conviction: the best-dressed man in the room is also the most comfortable. Not despite it. Because of it.</p>
+    <p>We set out to build a co-ord set so considered in its cut and so fine in its fabric that getting dressed would never feel like effort again.</p>
+  </div>
+</section>
+
+<!-- Story 2 -->
+<section class="story-section flip">
+  <div class="story-img">
+    <img src="frames/img_03.jpg" alt="Sable set" loading="lazy" />
+  </div>
+  <div class="story-text">
+    <p class="eyebrow">The Fabric</p>
+    <h2>Italian linen.<br><em>Nothing else.</em></h2>
+    <p>Every piece begins in a family-run mill in Emilia-Romagna. The linen is stonewashed by hand until it reaches the exact weight, drape, and softness we demand.</p>
+    <p>The result is a fabric that gets better with every wash and feels more like a second skin with each wear.</p>
+  </div>
+</section>
+
+<!-- Pillars -->
+<section class="pillars-section">
+  <div style="max-width:var(--max);margin:0 auto">
+    <div class="section-head">
+      <p class="eyebrow">Our Values</p>
+      <h2 style="font-family:var(--serif);font-weight:300;font-size:clamp(28px,4vw,52px);margin:.5rem 0">Three principles.<br><em>No exceptions.</em></h2>
+    </div>
+    <div class="pillars-grid">
+      <div class="pillar">
+        <svg class="pillar-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="20" cy="20" r="16"/>
+          <path d="M12 20l5 5 11-10"/>
+        </svg>
+        <h3>Craft</h3>
+        <p>Each set is cut by hand in a small atelier. Pattern, placement, and proportion are reviewed at every step. We do not rush the process.</p>
+      </div>
+      <div class="pillar">
+        <svg class="pillar-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M20 6v28M6 20h28"/>
+          <rect x="10" y="10" width="20" height="20" rx="2"/>
+        </svg>
+        <h3>Fabric</h3>
+        <p>Italian stonewashed linen. Pre-washed micro-pleated fabric. We source only from mills that share our obsession with hand, weight, and breathability.</p>
+      </div>
+      <div class="pillar">
+        <svg class="pillar-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M8 32l8-16 8 8 8-20"/>
+        </svg>
+        <h3>Silhouette</h3>
+        <p>Relaxed without being sloppy. Tailored without being stiff. The Ensemble silhouette is designed to look as good at a restaurant as it does on a beach.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Story 3 -->
+<section class="story-section">
+  <div class="story-img">
+    <img src="frames/img_04.jpg" alt="Ardoise pleated set" loading="lazy" />
+  </div>
+  <div class="story-text">
+    <p class="eyebrow">The Pleated Collection</p>
+    <h2>A new<br><em>dimension</em></h2>
+    <p>Our Ardoise pleated set extends the Ensemble language into a new texture. Micro-pleated fabric gives structure without stiffness and catches the light with every movement.</p>
+    <p>It is the same silhouette. An entirely different feeling.</p>
+    <a href="product.html?id=ardoise-pleated" class="btn-primary" style="margin-top:1.5rem;align-self:flex-start">Shop Ardoise</a>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="about-cta">
+  <p class="eyebrow">Ready to wear</p>
+  <h2>Find your<br><em>Ensemble</em></h2>
+  <a href="shop.html">Shop the Collection</a>
+</section>
+
+<div id="site-footer" data-root=""></div>
+
+<script src="js/store.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  renderHeader('about');
+  renderFooter();
+});
+</script>
+</body>
+</html>
