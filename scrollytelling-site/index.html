@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ENSEMBLE — Luxury Co-ord Sets</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,400;1,9..144,200;1,9..144,300;1,9..144,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { overflow-x: hidden; }
+
+    body {
+      background: #0a0a0a;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* ─── LOADER ─────────────────────────────────── */
+    #loader {
+      position: fixed;
+      inset: 0;
+      background: #0a0a0a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 1s ease, visibility 1s ease;
+    }
+    #loader.hidden { opacity: 0; visibility: hidden; }
+
+    #loader-brand {
+      font-family: 'Fraunces', serif;
+      font-weight: 300;
+      font-size: clamp(22px, 3vw, 34px);
+      letter-spacing: 0.5em;
+      color: #fff;
+      margin-bottom: 3.5rem;
+      text-transform: uppercase;
+    }
+
+    #loader-bar-track {
+      width: clamp(140px, 22vw, 260px);
+      height: 1px;
+      background: rgba(255,255,255,0.15);
+      position: relative;
+      overflow: hidden;
+    }
+    #loader-bar-fill {
+      position: absolute;
+      top: 0; left: 0;
+      height: 100%;
+      width: 0%;
+      background: #fff;
+      transition: width 0.15s linear;
+    }
+    #loader-pct {
+      margin-top: 1.2rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.25em;
+      color: rgba(255,255,255,0.35);
+    }
+
+    /* ─── SCROLL SCAFFOLD ─────────────────────────── */
+    #scroll-root {
+      /* tall enough for smooth scrub across 4 images */
+      height: 650vh;
+      position: relative;
+    }
+
+    #sticky {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    /* ─── CANVAS ──────────────────────────────────── */
+    #stage {
+      position: absolute;
+      inset: 0;
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* ─── TEXT SECTIONS ───────────────────────────── */
+    .txt {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      pointer-events: none;
+      opacity: 0;
+      will-change: opacity;
+    }
+    .txt.cta-section {
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Gradient washes — no visible box */
+    .wash {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+    .wash-left  { background: linear-gradient(to right,  rgba(0,0,0,.72) 0%, rgba(0,0,0,.42) 45%, transparent 100%); }
+    .wash-right { background: linear-gradient(to left,   rgba(0,0,0,.72) 0%, rgba(0,0,0,.42) 45%, transparent 100%); }
+    .wash-center{ background: radial-gradient(ellipse 80% 60% at 50% 80%, rgba(0,0,0,.78) 0%, rgba(0,0,0,.32) 60%, transparent 100%); }
+
+    .inner {
+      position: relative;
+      z-index: 1;
+      padding: 0 8vw;
+      max-width: 46%;
+    }
+    .inner.right { margin-left: auto; }
+    .inner.center {
+      max-width: 100%;
+      width: 100%;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 6vw;
+    }
+
+    .eyebrow {
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(9px, 0.9vw, 12px);
+      font-weight: 400;
+      letter-spacing: 0.38em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.55);
+      margin-bottom: 1.4rem;
+    }
+
+    h1 {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(54px, 8.5vw, 118px);
+      font-weight: 200;
+      line-height: 0.92;
+      letter-spacing: -0.025em;
+      margin-bottom: 2rem;
+    }
+
+    h2 {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(38px, 5.5vw, 80px);
+      font-weight: 200;
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      margin-bottom: 1.6rem;
+    }
+
+    .body {
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(13px, 1.25vw, 16px);
+      font-weight: 300;
+      line-height: 1.75;
+      color: rgba(255,255,255,.7);
+      max-width: 36ch;
+    }
+    .inner.center .body { max-width: 48ch; }
+
+    .cta-btn {
+      display: inline-block;
+      margin-top: 2.8rem;
+      padding: 1.05rem 3.2rem;
+      background: rgba(255,255,255,1);
+      color: #000;
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(10px, 1vw, 13px);
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      text-decoration: none;
+      cursor: pointer;
+      pointer-events: all;
+      transition: background .25s, letter-spacing .25s;
+      border: none;
+      outline: none;
+    }
+    .cta-btn:hover {
+      background: rgba(240,240,240,1);
+      letter-spacing: 0.28em;
+    }
+
+    /* ─── SCROLL HINT ─────────────────────────────── */
+    #scroll-hint {
+      position: fixed;
+      bottom: 2.8rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .6rem;
+      z-index: 200;
+      opacity: 0;
+      transition: opacity .6s ease;
+    }
+    #scroll-hint.show { opacity: 1; }
+    #scroll-hint span {
+      font-family: 'Inter', sans-serif;
+      font-size: 9px;
+      letter-spacing: .32em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.45);
+    }
+    .hint-line {
+      width: 1px;
+      height: 44px;
+      background: linear-gradient(to bottom, transparent, rgba(255,255,255,.5));
+      animation: hint-pulse 2.4s ease-in-out infinite;
+    }
+    @keyframes hint-pulse {
+      0%,100% { opacity:.25; transform:scaleY(.7); }
+      50%      { opacity: 1; transform:scaleY(1);  }
+    }
+
+    /* ─── MOBILE ──────────────────────────────────── */
+    @media (max-width: 680px) {
+      .inner { max-width: 90%; }
+      .inner.right { margin-left: 0; }
+      .txt { align-items: flex-end; padding-bottom: 12vh; }
+      .txt.cta-section { align-items: center; padding-bottom: 0; }
+      .wash-left,
+      .wash-right { background: linear-gradient(to top, rgba(0,0,0,.82) 0%, rgba(0,0,0,.3) 55%, transparent 100%); }
+      h1 { font-size: clamp(44px, 13vw, 68px); }
+      h2 { font-size: clamp(30px, 10vw, 54px); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════ LOADER ═══════════════ -->
+<div id="loader">
+  <div id="loader-brand">Ensemble</div>
+  <div id="loader-bar-track"><div id="loader-bar-fill"></div></div>
+  <div id="loader-pct">0%</div>
+</div>
+
+<!-- ═══════════════ SCROLL HINT ═══════════════ -->
+<div id="scroll-hint">
+  <span>Scroll</span>
+  <div class="hint-line"></div>
+</div>
+
+<!-- ═══════════════ MAIN ═══════════════ -->
+<div id="scroll-root">
+  <div id="sticky">
+    <canvas id="stage"></canvas>
+
+    <!-- 0 · HERO ── Black set, holding sunglasses -->
+    <div class="txt" id="s0">
+      <div class="wash wash-left"></div>
+      <div class="inner">
+        <p class="eyebrow">Summer 2026 Collection</p>
+        <h1>The Art<br>of <em>Easy</em></h1>
+        <p class="body">Pure linen. Immaculate line. A co-ord set conceived for those who move through life without effort.</p>
+      </div>
+    </div>
+
+    <!-- 1 · Black set, sunglasses on -->
+    <div class="txt" id="s1">
+      <div class="wash wash-right"></div>
+      <div class="inner right">
+        <p class="eyebrow">Italian Stonewashed Linen</p>
+        <h2>Woven<br>for the<br><em>Meridian</em></h2>
+        <p class="body">Cut from 100 percent stonewashed linen. Breathable under the midday sun. Impeccable by candlelight.</p>
+      </div>
+    </div>
+
+    <!-- 2 · Cream set -->
+    <div class="txt" id="s2">
+      <div class="wash wash-left"></div>
+      <div class="inner">
+        <p class="eyebrow">Precision Silhouette</p>
+        <h2>Nothing<br><em>Superfluous</em></h2>
+        <p class="body">Camp collar. Button placket. Trousers that fall exactly where they should. The edit is total.</p>
+      </div>
+    </div>
+
+    <!-- 3 · Grey pleated set -->
+    <div class="txt" id="s3">
+      <div class="wash wash-right"></div>
+      <div class="inner right">
+        <p class="eyebrow">Three Colorways</p>
+        <h2>Noir. Sable.<br><em>Ardoise.</em></h2>
+        <p class="body">Midnight black, warm sand, or cool slate. Three distinct worlds. One impeccable silhouette to inhabit them all.</p>
+      </div>
+    </div>
+
+    <!-- 4 · CTA -->
+    <div class="txt cta-section" id="s4">
+      <div class="wash wash-center"></div>
+      <div class="inner center">
+        <p class="eyebrow">Ensemble Collection</p>
+        <h2 style="font-size:clamp(44px,6.5vw,96px);letter-spacing:-0.03em;">Yours to wear.<br><em>Theirs to envy.</em></h2>
+        <p class="body" style="text-align:center;">Free delivery worldwide. 30 day returns. Sizes XS through XXL.</p>
+        <a href="#" class="cta-btn">Shop the Collection</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ── IMAGES ───────────────────────────────────── */
+  const SRC = [
+    'frames/img_01.jpg',   // 0 · black set, no glasses
+    'frames/img_02.jpg',   // 1 · black set, glasses on
+    'frames/img_03.jpg',   // 2 · cream set
+    'frames/img_04.jpg',   // 3 · grey pleated
+  ];
+
+  /* ── TEXT SECTION TIMING (scroll 0..1) ─────────── */
+  //  Each entry: [fadeInStart, peakStart, peakEnd, fadeOutEnd]
+  const TIMINGS = [
+    [0.00, 0.02, 0.14, 0.22],   // hero
+    [0.22, 0.30, 0.42, 0.50],   // feature 1
+    [0.50, 0.57, 0.68, 0.76],   // feature 2
+    [0.74, 0.80, 0.88, 0.94],   // feature 3
+    [0.90, 0.94, 1.00, 1.00],   // cta
+  ];
+  const SECTION_IDS = ['s0','s1','s2','s3','s4'];
+
+  /* ── IMAGE BLEND KEYFRAMES (scroll 0..1) ──────── */
+  // At each keyframe progress, we show a specific image index.
+  // Between keyframes we cross-fade.
+  const KF = [
+    { p: 0.00, img: 0 },
+    { p: 0.28, img: 0 },   // hold img 0 until 28%
+    { p: 0.38, img: 1 },   // transition to img 1 by 38%
+    { p: 0.54, img: 1 },   // hold img 1
+    { p: 0.64, img: 2 },   // transition to img 2
+    { p: 0.78, img: 2 },   // hold img 2
+    { p: 0.88, img: 3 },   // transition to img 3
+    { p: 1.00, img: 3 },   // hold img 3
+  ];
+
+  /* ── REFS ─────────────────────────────────────── */
+  const loader    = document.getElementById('loader');
+  const barFill   = document.getElementById('loader-bar-fill');
+  const barPct    = document.getElementById('loader-pct');
+  const scrollHint= document.getElementById('scroll-hint');
+  const scrollRoot= document.getElementById('scroll-root');
+  const canvas    = document.getElementById('stage');
+  const ctx       = canvas.getContext('2d');
+  const sections  = SECTION_IDS.map(id => document.getElementById(id));
+
+  /* ── STATE ────────────────────────────────────── */
+  let imgs = [];
+  let loaded = 0;
+  let W = 0, H = 0;
+  let scrollProg = 0;    // eased
+  let targetProg = 0;    // raw
+  let rafId = null;
+
+  /* ── RESIZE ───────────────────────────────────── */
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  /* ── LOAD ─────────────────────────────────────── */
+  function loadAll() {
+    imgs = SRC.map(src => {
+      const img = new Image();
+      img.onload  = onLoaded;
+      img.onerror = onLoaded;
+      img.src     = src;
+      return img;
+    });
+  }
+
+  function onLoaded() {
+    loaded++;
+    const pct = loaded / SRC.length;
+    barFill.style.width = (pct * 100) + '%';
+    barPct.textContent  = Math.round(pct * 100) + '%';
+    if (loaded === SRC.length) startSite();
+  }
+
+  /* ── START ────────────────────────────────────── */
+  function startSite() {
+    setTimeout(() => {
+      loader.classList.add('hidden');
+      scrollHint.classList.add('show');
+      drawFrame(0);
+      startLoop();
+    }, 500);
+  }
+
+  /* ── SCROLL ───────────────────────────────────── */
+  window.addEventListener('scroll', () => {
+    const maxScroll = scrollRoot.scrollHeight - window.innerHeight;
+    targetProg = maxScroll > 0 ? Math.max(0, Math.min(1, window.scrollY / maxScroll)) : 0;
+    if (targetProg > 0.02) scrollHint.classList.remove('show');
+  }, { passive: true });
+
+  /* ── RAF LOOP ─────────────────────────────────── */
+  function startLoop() {
+    function tick() {
+      // Smooth lerp — fast enough to feel snappy, slow enough to feel cinematic
+      const diff = targetProg - scrollProg;
+      if (Math.abs(diff) > 0.0001) {
+        scrollProg += diff * 0.10;
+      } else {
+        scrollProg = targetProg;
+      }
+      drawFrame(scrollProg);
+      updateText(scrollProg);
+      rafId = requestAnimationFrame(tick);
+    }
+    rafId = requestAnimationFrame(tick);
+  }
+
+  /* ── DRAW ─────────────────────────────────────── */
+  function getBlend(p) {
+    // Find which two keyframes we're between
+    for (let i = 0; i < KF.length - 1; i++) {
+      const a = KF[i], b = KF[i + 1];
+      if (p >= a.p && p <= b.p) {
+        const t = (b.p === a.p) ? 1 : (p - a.p) / (b.p - a.p);
+        return { idxA: a.img, idxB: b.img, t };
+      }
+    }
+    return { idxA: KF[KF.length-1].img, idxB: KF[KF.length-1].img, t: 0 };
+  }
+
+  function paintImage(img, alpha) {
+    if (!img || !img.complete || !img.naturalWidth) return;
+    if (alpha <= 0) return;
+
+    const iw = img.naturalWidth;
+    const ih = img.naturalHeight;
+
+    // Contain: fit whole image, no crop
+    const scale = Math.min(W / iw, H / ih);
+    const dw = iw * scale;
+    const dh = ih * scale;
+    const dx = Math.round((W - dw) / 2);
+    const dy = Math.round((H - dh) / 2);
+
+    ctx.save();
+    ctx.globalAlpha = alpha;
+
+    // ── Edge-pixel stretch fills (no seam, no blur, no flat color) ──
+    // Left strip
+    if (dx > 1) {
+      ctx.drawImage(img,  0,        0, 1,  ih,  0,        dy,  dx + 1,          dh);
+    }
+    // Right strip
+    if (W - dx - dw > 1) {
+      ctx.drawImage(img,  iw - 1,   0, 1,  ih,  dx + dw - 1, dy,  W - dx - dw + 1, dh);
+    }
+    // Top strip
+    if (dy > 1) {
+      ctx.drawImage(img,  0,        0, iw, 1,   dx,       0,   dw,               dy + 1);
+    }
+    // Bottom strip
+    if (H - dy - dh > 1) {
+      ctx.drawImage(img,  0,  ih - 1, iw, 1,   dx,  dy + dh - 1, dw,  H - dy - dh + 1);
+    }
+    // Corners (1px source pixel stretched to fill each corner block)
+    if (dx > 1 && dy > 1) {
+      ctx.drawImage(img,  0,      0,    1, 1,  0,       0,       dx + 1,          dy + 1);          // TL
+      ctx.drawImage(img,  iw - 1, 0,    1, 1,  dx + dw - 1, 0,  W - dx - dw + 1, dy + 1);          // TR
+      ctx.drawImage(img,  0,      ih-1, 1, 1,  0,       dy + dh - 1, dx + 1,      H - dy - dh + 1); // BL
+      ctx.drawImage(img,  iw-1,   ih-1, 1, 1,  dx + dw - 1, dy + dh - 1, W - dx - dw + 1, H - dy - dh + 1); // BR
+    }
+
+    // ── Main image ──
+    ctx.drawImage(img, 0, 0, iw, ih, dx, dy, dw, dh);
+
+    ctx.restore();
+  }
+
+  function drawFrame(p) {
+    ctx.clearRect(0, 0, W, H);
+    const { idxA, idxB, t } = getBlend(p);
+
+    if (idxA === idxB || t <= 0) {
+      paintImage(imgs[idxA], 1);
+    } else if (t >= 1) {
+      paintImage(imgs[idxB], 1);
+    } else {
+      // Cross-fade: paint A at full, B at t
+      paintImage(imgs[idxA], 1);
+      paintImage(imgs[idxB], t);
+    }
+  }
+
+  /* ── TEXT OPACITY ─────────────────────────────── */
+  function easeOpacity(p, timing) {
+    const [fi, ps, pe, fo] = timing;
+    if (p < fi || p > fo) return 0;
+    if (p < ps) return (p - fi) / (ps - fi);
+    if (p <= pe) return 1;
+    return 1 - (p - pe) / (fo - pe);
+  }
+
+  function updateText(p) {
+    sections.forEach((el, i) => {
+      if (!el) return;
+      const op = Math.max(0, Math.min(1, easeOpacity(p, TIMINGS[i])));
+      el.style.opacity = op;
+    });
+  }
+
+  /* ── KICK OFF ─────────────────────────────────── */
+  loadAll();
+})();
+</script>
+</body>
+</html>
