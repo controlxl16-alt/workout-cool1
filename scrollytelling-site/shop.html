@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shop — Ensemble</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,400;1,9..144,300&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/main.css" />
+  <style>
+    /* ── Collection Hero ── */
+    .col-hero {
+      background: var(--black);
+      color: #fff;
+      text-align: center;
+      padding: clamp(5rem,12vw,9rem) var(--side) clamp(3rem,6vw,5rem);
+    }
+    .col-hero .ey { color: rgba(255,255,255,.4); margin-bottom: 1rem; }
+    .col-hero h1 {
+      font-family: var(--serif); font-weight: 200;
+      font-size: clamp(44px, 7vw, 96px);
+      letter-spacing: -.025em; line-height: .95;
+    }
+    .col-hero p { font-size: 15px; color: rgba(255,255,255,.5); margin: 1.2rem auto 0; max-width: 50ch; line-height: 1.7; }
+
+    /* ── Filter Bar ── */
+    .filter-bar {
+      border-bottom: 1px solid var(--g200);
+      padding: 1rem var(--side);
+      position: sticky; top: var(--hdr-h);
+      background: rgba(255,255,255,.96);
+      backdrop-filter: blur(8px);
+      z-index: 100;
+    }
+    .filter-inner {
+      max-width: var(--max); margin: 0 auto;
+      display: flex; align-items: center;
+      justify-content: space-between; gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .filters { display: flex; gap: .2rem; flex-wrap: wrap; }
+    .filter-btn {
+      padding: .45rem 1rem;
+      font-size: 11px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      border: 1.5px solid transparent;
+      color: var(--g600);
+      transition: border-color .2s, color .2s;
+      cursor: pointer;
+    }
+    .filter-btn:hover { color: var(--black); }
+    .filter-btn.on { border-color: var(--black); color: var(--black); }
+
+    .sort-wrap { display: flex; align-items: center; gap: .5rem; }
+    .sort-wrap label { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--g400); }
+    .sort-wrap select {
+      font-size: 12px; color: var(--black);
+      border: none; background: transparent;
+      outline: none; cursor: pointer;
+      padding: .2rem;
+    }
+    .count-label { font-size: 12px; color: var(--g400); }
+
+    /* ── Grid ── */
+    .shop-section {
+      padding: clamp(2.5rem,5vw,4rem) var(--side) clamp(4rem,8vw,7rem);
+    }
+    .shop-grid {
+      max-width: var(--max); margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--gap) var(--gap);
+    }
+
+    /* ── No results ── */
+    .no-results {
+      text-align: center; padding: 5rem 0;
+      color: var(--g400); font-size: 15px;
+      grid-column: 1/-1;
+    }
+
+    /* ── Banner strip ── */
+    .promo-strip {
+      background: var(--black); color: #fff;
+      text-align: center; padding: .7rem var(--side);
+      font-size: 11px; letter-spacing: .18em; text-transform: uppercase;
+    }
+
+    @media (max-width: 900px) { .shop-grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 560px) { .shop-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+<div class="promo-strip">Free worldwide delivery on all orders · 30 day returns</div>
+<div id="site-header" data-root=""></div>
+<div class="header-spacer" style="height:0"></div>
+
+<!-- Collection Hero -->
+<section class="col-hero">
+  <p class="eyebrow ey">Summer 2026</p>
+  <h1>The<br><em>Collection</em></h1>
+  <p>Three co-ord sets. Three colorways. One uncompromising vision of easy, elevated dressing.</p>
+</section>
+
+<!-- Filter Bar -->
+<div class="filter-bar">
+  <div class="filter-inner">
+    <div class="filters" id="filters">
+      <button class="filter-btn on" data-f="all">All</button>
+      <button class="filter-btn" data-f="linen">Linen</button>
+      <button class="filter-btn" data-f="pleated">Pleated</button>
+      <button class="filter-btn" data-f="new">New Arrivals</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;">
+      <span class="count-label" id="count-label">3 products</span>
+      <div class="sort-wrap">
+        <label for="sort">Sort</label>
+        <select id="sort">
+          <option value="default">Featured</option>
+          <option value="asc">Price: Low to High</option>
+          <option value="desc">Price: High to Low</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Product Grid -->
+<section class="shop-section">
+  <div class="shop-grid" id="shop-grid"></div>
+</section>
+
+<div id="site-footer" data-root=""></div>
+
+<script src="js/store.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  renderHeader('shop');
+  renderFooter();
+
+  var currentFilter = 'all';
+  var currentSort   = 'default';
+
+  // Check URL params
+  var params = new URLSearchParams(window.location.search);
+  if(params.get('filter')) currentFilter = params.get('filter');
+  if(params.get('badge') === 'new') currentFilter = 'new';
+
+  // Sync filter buttons
+  document.querySelectorAll('.filter-btn').forEach(function(btn){
+    btn.classList.toggle('on', btn.dataset.f === currentFilter);
+  });
+
+  function filterProducts(){
+    var list = PRODUCTS.slice();
+    if(currentFilter === 'linen')   list = list.filter(function(p){ return p.fabric.toLowerCase().includes('linen'); });
+    if(currentFilter === 'pleated') list = list.filter(function(p){ return p.fabric.toLowerCase().includes('pleated'); });
+    if(currentFilter === 'new')     list = list.filter(function(p){ return p.badge === 'New'; });
+    if(currentSort === 'asc')  list.sort(function(a,b){ return a.price-b.price; });
+    if(currentSort === 'desc') list.sort(function(a,b){ return b.price-a.price; });
+    return list;
+  }
+
+  function renderGrid(){
+    var list  = filterProducts();
+    var grid  = document.getElementById('shop-grid');
+    var label = document.getElementById('count-label');
+    label.textContent = list.length + ' product' + (list.length !== 1 ? 's' : '');
+
+    if(list.length === 0){
+      grid.innerHTML = '<p class="no-results">No products found in this category.</p>';
+      return;
+    }
+
+    grid.innerHTML = list.map(function(p){
+      return '<div class="product-card">' +
+        '<a href="product.html?id='+p.id+'">' +
+          '<div class="card-img-wrap">' +
+            (p.badge ? '<span class="card-badge'+(p.badge==='New'?' new':'')+'">'+p.badge+'</span>' : '') +
+            '<img class="img-main" src="'+p.images[0]+'" alt="'+p.name+'" loading="lazy" />' +
+            (p.images[1] ? '<img class="img-alt" src="'+p.images[1]+'" alt="'+p.name+'" loading="lazy" />' : '') +
+          '</div>' +
+          '<div class="card-info">' +
+            '<p class="card-name">'+p.name+'</p>' +
+            '<p class="card-sub">'+p.colorway+' · '+p.fabric+'</p>' +
+            '<p class="card-price">'+p.currency+p.price+'</p>' +
+            '<div class="card-swatches">'+
+              PRODUCTS.map(function(x){
+                return '<div class="swatch'+(x.id===p.id?' active':'')+'" style="background:'+x.colorHex+'" title="'+x.colorway+'" onclick="event.preventDefault();window.location=\'product.html?id='+x.id+'\'"></div>';
+              }).join('')+
+            '</div>'+
+          '</div>' +
+        '</a>' +
+        '<div class="card-quick" onclick="quickShopAdd(\''+p.id+'\',event)">Quick Add — Select Size</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  document.getElementById('filters').addEventListener('click', function(e){
+    var btn = e.target.closest('.filter-btn');
+    if(!btn) return;
+    currentFilter = btn.dataset.f;
+    document.querySelectorAll('.filter-btn').forEach(function(b){ b.classList.remove('on'); });
+    btn.classList.add('on');
+    renderGrid();
+  });
+
+  document.getElementById('sort').addEventListener('change', function(){
+    currentSort = this.value;
+    renderGrid();
+  });
+
+  renderGrid();
+
+  window.quickShopAdd = function(id, e){
+    e.preventDefault();
+    var p = getProduct(id);
+    if(!p) return;
+    // Show size picker inline
+    var existing = document.getElementById('size-picker-'+id);
+    if(existing){ existing.remove(); return; }
+
+    var card = e.target.closest('.product-card');
+    var picker = document.createElement('div');
+    picker.id = 'size-picker-'+id;
+    picker.style.cssText = 'position:absolute;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e4e0da;padding:.8rem;z-index:10;animation:slideUp .2s ease';
+    picker.innerHTML =
+      '<p style="font-size:10px;letter-spacing:.2em;text-transform:uppercase;margin-bottom:.5rem;color:#a8a09a;">Select size</p>'+
+      '<div style="display:flex;gap:.3rem;flex-wrap:wrap;">'+
+        p.sizes.map(function(s){
+          return '<button onclick="addToCart(\''+id+'\',\''+s+'\',1)" style="min-width:40px;height:36px;border:1.5px solid #e4e0da;font-size:11px;cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor=\'#0a0a0a\'" onmouseout="this.style.borderColor=\'#e4e0da\'">'+s+'</button>';
+        }).join('')+
+      '</div>';
+    card.style.position = 'relative';
+    card.appendChild(picker);
+
+    document.addEventListener('click', function outside(ev){
+      if(!card.contains(ev.target)){ picker.remove(); document.removeEventListener('click', outside); }
+    }, true);
+  };
+});
+</script>
+</body>
+</html>
